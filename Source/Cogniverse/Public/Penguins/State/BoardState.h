@@ -7,28 +7,24 @@
 #include "UObject/NoExportTypes.h"
 #include "BoardState.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class COGNIVERSE_API UBoardState : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UBoardState();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FTile> Tiles;
 
-	virtual bool IsSupportedForNetworking() const override
-	{
-		return true;
-	}
+	TArray<int32> GenerateRandomStart() const;
+	void ApplyStartingPositions(TArray<int32> Positions);
 
 private:
 	const TArray<int32> RowLengths = {4, 5, 6, 7, 6, 5, 4};
 
 	void InitialiseBoard();
-	void GenerateRandomStart();
 	int32 TotalTiles() const;
 
 	FTile& GetTileAt(int32 Row, int32 Column);

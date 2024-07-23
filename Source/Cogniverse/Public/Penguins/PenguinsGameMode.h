@@ -6,12 +6,8 @@
 #include "GameFramework/GameMode.h"
 #include "PenguinsGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COGNIVERSE_API APenguinsGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
 };

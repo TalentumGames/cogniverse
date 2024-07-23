@@ -10,22 +10,13 @@ UBoardState::UBoardState()
 	InitialiseBoard();
 }
 
-void UBoardState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION(UBoardState, Tiles, COND_InitialOnly);
-}
-
 void UBoardState::InitialiseBoard()
 {
 	// sets all tiles to neutral
 	Tiles.SetNum(TotalTiles(), []() { return FTile(); });
-
-	// create 6 empty tiles randomly for players to place their pieces
-	GenerateRandomStart();
 }
 
-void UBoardState::GenerateRandomStart()
+TArray<int32> UBoardState::GenerateRandomStart() const
 {
 	// TODO: would some shuffling algorithm be more appropriate?
 	TArray<int32> UnoccupiedIndices;
@@ -37,8 +28,17 @@ void UBoardState::GenerateRandomStart()
 		if (!UnoccupiedIndices.Contains(RandomIndex))
 		{
 			UnoccupiedIndices.Add(RandomIndex);
-			Tiles[RandomIndex].State = ETileState::Unoccupied;
 		}
+	}
+
+	return UnoccupiedIndices;
+}
+
+void UBoardState::ApplyStartingPositions(TArray<int32> Positions)
+{
+	for (int32 Position : Positions)
+	{
+		Tiles[Position].State = ETileState::Unoccupied;
 	}
 }
 

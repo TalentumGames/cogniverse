@@ -7,6 +7,8 @@
 #include "State/BoardState.h"
 #include "PenguinsGameState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBoardInitialised);
+
 UCLASS()
 class COGNIVERSE_API APenguinsGameState : public AGameState
 {
@@ -14,11 +16,21 @@ class COGNIVERSE_API APenguinsGameState : public AGameState
 
 public:
 	APenguinsGameState();
+	virtual void PreInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, ReplicatedUsing=OnRep_Board)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<UBoardState> Board;
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_StartingPositionsAssigned)
+	TArray<int32> StartingPositions;
+
+	UFUNCTION(BlueprintCallable)
+	void CreateStartingPositions();
+
 	UFUNCTION()
-	void OnRep_Board();
+	void OnRep_StartingPositionsAssigned() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Game Events")
+	FOnBoardInitialised OnBoardInitialised;
 };
