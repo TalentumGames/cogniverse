@@ -1,22 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Penguins/State/BoardState.h"
+#include "Penguins/State/PenguinsBoardState.h"
 
 #include "Net/UnrealNetwork.h"
 
-UBoardState::UBoardState()
+UPenguinsBoardState::UPenguinsBoardState()
 {
 	InitialiseBoard();
 }
 
-void UBoardState::InitialiseBoard()
+void UPenguinsBoardState::InitialiseBoard()
 {
 	// sets all tiles to neutral
-	Tiles.SetNum(TotalTiles(), []() { return FTile(); });
+	Tiles.SetNum(TotalTiles(), []() { return FPenguinsTile(); });
 }
 
-TArray<int32> UBoardState::GenerateRandomStart() const
+TArray<int32> UPenguinsBoardState::GenerateRandomStart() const
 {
 	// TODO: would some shuffling algorithm be more appropriate?
 	TArray<int32> UnoccupiedIndices;
@@ -34,15 +34,29 @@ TArray<int32> UBoardState::GenerateRandomStart() const
 	return UnoccupiedIndices;
 }
 
-void UBoardState::ApplyStartingPositions(TArray<int32> Positions)
+void UPenguinsBoardState::ApplyStartingPositions(TArray<int32> Positions)
 {
 	for (int32 Position : Positions)
 	{
-		Tiles[Position].State = ETileState::Unoccupied;
+		Tiles[Position].State = EPenguinsTileState::Unoccupied;
 	}
 }
 
-int32 UBoardState::TotalTiles() const
+int32 UPenguinsBoardState::LongestRowLength() const
+{
+	int32 Max = 0;
+	for (const int32 RowLength : RowLengths)
+	{
+		if (RowLength > Max)
+		{
+			Max = RowLength;
+		}
+	}
+
+	return Max;
+}
+
+int32 UPenguinsBoardState::TotalTiles() const
 {
 	int32 Total = 0;
 
@@ -54,14 +68,14 @@ int32 UBoardState::TotalTiles() const
 	return Total;
 }
 
-FTile& UBoardState::GetTileAt(int32 Row, int32 Column)
+FPenguinsTile& UPenguinsBoardState::GetTileAt(int32 Row, int32 Column)
 {
 	check(IsValidRowColumn(Row, Column));
 	int32 Index = GetIndexFromRowColumn(Row, Column);
 	return Tiles[Index];
 }
 
-int32 UBoardState::GetIndexFromRowColumn(int32 Row, int32 Column) const
+int32 UPenguinsBoardState::GetIndexFromRowColumn(int32 Row, int32 Column) const
 {
 	int32 Index = 0;
 	for (int32 i = 0; i < Row; ++i)
@@ -71,7 +85,7 @@ int32 UBoardState::GetIndexFromRowColumn(int32 Row, int32 Column) const
 	return Index + Column;
 }
 
-bool UBoardState::IsValidRowColumn(const int32 Row, const int32 Column) const
+bool UPenguinsBoardState::IsValidRowColumn(const int32 Row, const int32 Column) const
 {
 	return Row >= 0 && Row < RowLengths.Num() && Column >= 0 && Column < RowLengths[Row];
 }

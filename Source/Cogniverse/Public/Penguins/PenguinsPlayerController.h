@@ -13,5 +13,7 @@ UCLASS()
 class COGNIVERSE_API APenguinsPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
 };

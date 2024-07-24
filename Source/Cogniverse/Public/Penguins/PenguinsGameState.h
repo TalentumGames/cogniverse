@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
-#include "State/BoardState.h"
+#include "State/PenguinsBoardState.h"
 #include "PenguinsGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBoardInitialised);
@@ -20,7 +20,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TObjectPtr<UBoardState> Board;
+	TObjectPtr<UPenguinsBoardState> Board;
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_StartingPositionsAssigned)
 	TArray<int32> StartingPositions;

@@ -3,31 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tile.h"
+#include "PenguinsTile.h"
 #include "UObject/NoExportTypes.h"
-#include "BoardState.generated.h"
+#include "PenguinsBoardState.generated.h"
 
 UCLASS(BlueprintType)
-class COGNIVERSE_API UBoardState : public UObject
+class COGNIVERSE_API UPenguinsBoardState : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UBoardState();
+	UPenguinsBoardState();
+
+	const TArray<int32> RowLengths = {4, 5, 6, 7, 6, 5, 4};
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FTile> Tiles;
+	TArray<FPenguinsTile> Tiles;
 
 	TArray<int32> GenerateRandomStart() const;
 	void ApplyStartingPositions(TArray<int32> Positions);
+	int32 LongestRowLength() const;
 
 private:
-	const TArray<int32> RowLengths = {4, 5, 6, 7, 6, 5, 4};
-
 	void InitialiseBoard();
 	int32 TotalTiles() const;
 
-	FTile& GetTileAt(int32 Row, int32 Column);
+	FPenguinsTile& GetTileAt(int32 Row, int32 Column);
 	int32 GetIndexFromRowColumn(int32 Row, int32 Column) const;
 	bool IsValidRowColumn(int32 Row, int32 Column) const;
 };

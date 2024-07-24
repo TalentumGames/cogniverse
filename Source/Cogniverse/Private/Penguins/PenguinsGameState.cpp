@@ -7,7 +7,7 @@
 
 APenguinsGameState::APenguinsGameState()
 {
-	Board = CreateDefaultSubobject<UBoardState>(TEXT("BoardState"));
+	Board = CreateDefaultSubobject<UPenguinsBoardState>(TEXT("BoardState"));
 }
 
 void APenguinsGameState::PreInitializeComponents()
@@ -16,7 +16,7 @@ void APenguinsGameState::PreInitializeComponents()
 
 	if (!Board)
 	{
-		Board = NewObject<UBoardState>();
+		Board = NewObject<UPenguinsBoardState>();
 	}
 }
 

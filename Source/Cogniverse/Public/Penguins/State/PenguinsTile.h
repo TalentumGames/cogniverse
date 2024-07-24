@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Tile.generated.h"
+#include "PenguinsTile.generated.h"
 
 UENUM(BlueprintType)
-enum class ETileState : uint8
+enum class EPenguinsTileState : uint8
 {
 	Unoccupied UMETA(DisplayName = "Unoccupied"),
 	Neutral UMETA(DisplayName = "Neutral Piece"),
@@ -17,14 +17,14 @@ enum class ETileState : uint8
 
 
 USTRUCT(BlueprintType)
-struct FTile
+struct FPenguinsTile
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ETileState State;
+	EPenguinsTileState State;
 
-	FTile() : State(ETileState::Neutral)
+	FPenguinsTile() : State(EPenguinsTileState::Neutral)
 	{
 	}
 };
