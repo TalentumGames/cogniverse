@@ -18,6 +18,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Properties")
 	void SetSize(float NewSize);
 
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+	FString GetDebugName() const;
+
+	UPROPERTY()
+	FInt32Vector2 BoardLocation;
+
 protected:
 	virtual void BeginPlay() override;
 

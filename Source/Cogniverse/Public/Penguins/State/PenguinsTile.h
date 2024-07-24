@@ -24,7 +24,10 @@ struct FPenguinsTile
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPenguinsTileState State;
 
-	FPenguinsTile() : State(EPenguinsTileState::Neutral)
+	UPROPERTY()
+	FInt32Vector2 Location;
+
+	FPenguinsTile() : State(EPenguinsTileState::Neutral), Location(FInt32Vector2(0, 0))
 	{
 	}
 };

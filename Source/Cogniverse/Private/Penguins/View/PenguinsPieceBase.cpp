@@ -26,6 +26,11 @@ void APenguinsPieceBase::SetSize(const float NewSize)
 	}
 }
 
+FString APenguinsPieceBase::GetDebugName() const
+{
+	return FString::Printf(TEXT("%s (%d, %d)"), *GetClass()->GetName(), BoardLocation.X, BoardLocation.Y);
+}
+
 void APenguinsPieceBase::BeginPlay()
 {
 	Super::BeginPlay();

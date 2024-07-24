@@ -6,12 +6,8 @@
 #include "Penguins/View/PenguinsPieceBase.h"
 #include "PenguinsSlot.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COGNIVERSE_API APenguinsSlot : public APenguinsPieceBase
 {
 	GENERATED_BODY()
-	
 };

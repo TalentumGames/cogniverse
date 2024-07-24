@@ -26,7 +26,6 @@ public:
 
 private:
 	void InitialiseBoard();
-	int32 TotalTiles() const;
 
 	FPenguinsTile& GetTileAt(int32 Row, int32 Column);
 	int32 GetIndexFromRowColumn(int32 Row, int32 Column) const;

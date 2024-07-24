@@ -19,7 +19,7 @@ void APenguinsBoard::InitialiseBoard()
 {
 	if (const auto World = GetWorld())
 	{
-		APenguinsGameState* GameState = Cast<APenguinsGameState>(World->GetGameState());
+		const APenguinsGameState* GameState = Cast<APenguinsGameState>(World->GetGameState());
 		if (GameState && GameState->Board)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Setting up initial board state with starting positions"))
@@ -28,50 +28,81 @@ void APenguinsBoard::InitialiseBoard()
 	}
 }
 
-void APenguinsBoard::InitialiseBoardFromState(UPenguinsBoardState* State)
+void APenguinsBoard::InitialiseBoardFromState(const UPenguinsBoardState* State)
 {
+	HexWidth = CalculateHexWidth(State);
 	CreateSlots(State);
+	PlaceNeutralPieces(State);
 }
 
 void APenguinsBoard::CreateSlots(const UPenguinsBoardState* State)
 {
 	const FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, false);
-	const float HexWidth = CalculateHexWidth(State);
-	// the actual distance between rows, which is smaller than the height due to the hexagons touching
-	const float RowDistance = RowHeight * 0.75f;
-	const int32 NumberOfRows = State->RowLengths.Num();
-
-	for (int32 Row = 0; Row < NumberOfRows; ++Row)
+	for (const auto Tile : State->Tiles)
 	{
-		const int32 RowLength = State->RowLengths[Row];
-		const float Y = (NumberOfRows / 2 - Row) * RowDistance;
-		const float XOffset = -(RowLength - 1) * HexWidth / 2;
-
-		for (int32 Col = 0; Col < RowLength; ++Col)
+		const int32 Row = Tile.Location.X;
+		const int32 Col = Tile.Location.Y;
+		const FVector2d Location2D = CalculateTileLocation(State, Tile);
+		const FVector Location = FVector(Location2D.X, Location2D.Y, 0);
+		if (const auto Slot = SpawnPiece(SlotClass, Location, AttachRules))
 		{
-			const float X = XOffset + Col * HexWidth;
-			SpawnSlot(X, Y, HexWidth, AttachRules);
+			Slot->BoardLocation = FInt32Vector2(Row, Col);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to spawn slot (%d, %d)"), Row, Col);
 		}
 	}
 }
 
-void APenguinsBoard::SpawnSlot(const double X, const double Y, const double HexWidth,
-                               const FAttachmentTransformRules& AttachRules)
+void APenguinsBoard::PlaceNeutralPieces(const UPenguinsBoardState* State)
 {
-	const FVector Location(X, Y, 0);
-	APenguinsPieceBase* NewSlot = GetWorld()->SpawnActor<
-		APenguinsPieceBase>(SlotClass, Location, FRotator::ZeroRotator);
+	const FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, false);
+	for (const auto Tile : State->Tiles)
+	{
+		switch (Tile.State)
+		{
+		case EPenguinsTileState::Unoccupied:
+			break;
+		case EPenguinsTileState::Neutral:
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Neutral tile"))
+				const int32 Row = Tile.Location.X;
+				const int32 Col = Tile.Location.Y;
+				const FVector2d Location2D = CalculateTileLocation(State, Tile);
+				const FVector Location = FVector(Location2D.X, Location2D.Y, 10);
+				if (const auto Piece = SpawnPiece(NeutralPieceClass, Location, AttachRules))
+				{
+					Piece->BoardLocation = FInt32Vector2(Row, Col);
+					UE_LOG(LogTemp, Warning, TEXT("Spawned neutral tile"))
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("Failed to spawn neutral piece (%d, %d)"), Row, Col);
+				}
+				break;
+			}
+		default:
+			UE_LOG(LogTemp, Error, TEXT("Unexpected tile state"))
+		}
+	}
+}
 
-	if (NewSlot)
+TObjectPtr<APenguinsPieceBase> APenguinsBoard::SpawnPiece(TSubclassOf<APenguinsPieceBase> PieceClass,
+                                                          const FVector& Location,
+                                                          const FAttachmentTransformRules& AttachRules)
+{
+	APenguinsPieceBase* Piece = GetWorld()->SpawnActor<
+		APenguinsPieceBase>(PieceClass, Location, FRotator::ZeroRotator);
+
+	if (Piece)
 	{
-		NewSlot->SetActorRotation(FRotator(0, 0, -90));
-		NewSlot->SetSize(HexWidth * 0.9f);
-		NewSlot->AttachToActor(this, AttachRules);
+		Piece->SetActorRotation(FRotator(0, 0, -90));
+		Piece->SetSize(HexWidth * 0.9f);
+		Piece->AttachToActor(this, AttachRules);
+		return Piece;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Failed to initialise slot at (%f, %f)."), X, Y);
-	}
+	return nullptr;
 }
 
 /**
@@ -86,4 +117,19 @@ float APenguinsBoard::CalculateHexWidth(const UPenguinsBoardState* State) const
 	const float DesiredBoardWidth = BoardHeight * 2 / TMathUtil<float>::Sqrt(3.f);
 
 	return DesiredBoardWidth / State->LongestRowLength();
+}
+
+FVector2d APenguinsBoard::CalculateTileLocation(const UPenguinsBoardState* State, const FPenguinsTile Tile) const
+{
+	// the actual distance between rows, which is smaller than the height due to the hexagons touching
+	const float RowDistance = RowHeight * 0.75f;
+
+	const int32 Row = Tile.Location.X;
+	const int32 RowLength = State->RowLengths[Row];
+
+	const float Y = (State->RowLengths.Num() / 2 - Row) * RowDistance;
+	const float XOffset = -(RowLength - 1) * HexWidth / 2;
+	const float X = XOffset + Tile.Location.Y * HexWidth;
+
+	return FVector2d(X, Y);
 }

@@ -12,15 +12,22 @@ UPenguinsBoardState::UPenguinsBoardState()
 
 void UPenguinsBoardState::InitialiseBoard()
 {
-	// sets all tiles to neutral
-	Tiles.SetNum(TotalTiles(), []() { return FPenguinsTile(); });
+	for (int32 Row = 0; Row < RowLengths.Num(); ++Row)
+	{
+		for (int32 Col = 0; Col < RowLengths[Row]; ++Col)
+		{
+			auto Tile = FPenguinsTile();
+			Tile.Location = FInt32Vector2(Row, Col);
+			Tiles.Add(Tile);
+		}
+	}
 }
 
 TArray<int32> UPenguinsBoardState::GenerateRandomStart() const
 {
 	// TODO: would some shuffling algorithm be more appropriate?
 	TArray<int32> UnoccupiedIndices;
-	const int32 TileCount = TotalTiles();
+	const int32 TileCount = Tiles.Num();
 
 	while (UnoccupiedIndices.Num() < 6)
 	{
@@ -54,18 +61,6 @@ int32 UPenguinsBoardState::LongestRowLength() const
 	}
 
 	return Max;
-}
-
-int32 UPenguinsBoardState::TotalTiles() const
-{
-	int32 Total = 0;
-
-	for (const int32 RowLength : RowLengths)
-	{
-		Total += RowLength;
-	}
-
-	return Total;
 }
 
 FPenguinsTile& UPenguinsBoardState::GetTileAt(int32 Row, int32 Column)

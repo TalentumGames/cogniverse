@@ -33,9 +33,15 @@ protected:
 	void InitialiseBoard();
 
 private:
-	void InitialiseBoardFromState(UPenguinsBoardState* State);
+	void InitialiseBoardFromState(const UPenguinsBoardState* State);
 	void CreateSlots(const UPenguinsBoardState* State);
-	void SpawnSlot(const double X, const double Y, const double HexWidth,
-	               const FAttachmentTransformRules& AttachRules);
+	void PlaceNeutralPieces(const UPenguinsBoardState* State);
+	TObjectPtr<APenguinsPieceBase> SpawnPiece(TSubclassOf<APenguinsPieceBase> PieceClass,
+	                                          const FVector& Location,
+	                                          const FAttachmentTransformRules& AttachRules);
+
 	float CalculateHexWidth(const UPenguinsBoardState* State) const;
+	float HexWidth;
+
+	FVector2d CalculateTileLocation(const UPenguinsBoardState* State, FPenguinsTile Tile) const;
 };
