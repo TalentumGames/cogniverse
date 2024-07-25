@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "PenguinsPieceBase.h"
 #include "PenguinsPieceNeutral.h"
+#include "PenguinsPiecePlayer.h"
 #include "GameFramework/Actor.h"
+#include "Penguins/State/PenguinsAction.h"
 #include "Penguins/State/PenguinsBoardState.h"
 #include "PenguinsBoard.generated.h"
 
@@ -23,6 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Board")
 	TSubclassOf<APenguinsPieceNeutral> NeutralPieceClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Board")
+	TSubclassOf<APenguinsPiecePlayer> PlayerPieceClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Board", meta = (ClampMin = "1", ClampMax = "10"))
 	float RowHeight = 3.f;
 
@@ -31,6 +36,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void InitialiseBoard();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleAction(FPenguinsAction Action);
 
 private:
 	void InitialiseBoardFromState(const UPenguinsBoardState* State);
@@ -44,4 +52,7 @@ private:
 	float HexWidth;
 
 	FVector2d CalculateTileLocation(const UPenguinsBoardState* State, FPenguinsTile Tile) const;
+
+	void PlacePlayerPiece(const FPenguinsAction& Action);
+	void MovePlayerPiece(FPenguinsAction Action);
 };

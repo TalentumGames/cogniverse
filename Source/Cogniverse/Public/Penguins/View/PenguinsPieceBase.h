@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperSpriteComponent.h"
 #include "GameFramework/Actor.h"
+#include "Penguins/PenguinsPlayerState.h"
 #include "PenguinsPieceBase.generated.h"
 
 UCLASS()
@@ -23,6 +24,15 @@ public:
 
 	UPROPERTY()
 	FInt32Vector2 BoardLocation;
+
+	UFUNCTION(BlueprintCallable, Category = "Properties")
+	int32 GetRow() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Properties")
+	int32 GetColumn() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Properties")
+	EPenguinsSide GetMySide() const;
 
 protected:
 	virtual void BeginPlay() override;

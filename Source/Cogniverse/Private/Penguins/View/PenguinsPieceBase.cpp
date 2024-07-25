@@ -3,6 +3,8 @@
 
 #include "Penguins/View/PenguinsPieceBase.h"
 
+#include "Penguins/PenguinsPlayerController.h"
+
 APenguinsPieceBase::APenguinsPieceBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -29,6 +31,27 @@ void APenguinsPieceBase::SetSize(const float NewSize)
 FString APenguinsPieceBase::GetDebugName() const
 {
 	return FString::Printf(TEXT("%s (%d, %d)"), *GetClass()->GetName(), BoardLocation.X, BoardLocation.Y);
+}
+
+int32 APenguinsPieceBase::GetRow() const
+{
+	return BoardLocation.X;
+}
+
+int32 APenguinsPieceBase::GetColumn() const
+{
+	return BoardLocation.Y;
+}
+
+EPenguinsSide APenguinsPieceBase::GetMySide() const
+{
+	if (const auto PlayerController = Cast<APenguinsPlayerController>(GetWorld()->GetFirstPlayerController()))
+	{
+		return PlayerController->GetPlayerState<APenguinsPlayerState>()->Side;
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("Couldn't get my side"))
+	return EPenguinsSide::Unassigned;
 }
 
 void APenguinsPieceBase::BeginPlay()

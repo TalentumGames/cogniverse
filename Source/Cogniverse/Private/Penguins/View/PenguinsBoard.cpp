@@ -28,6 +28,18 @@ void APenguinsBoard::InitialiseBoard()
 	}
 }
 
+void APenguinsBoard::HandleAction(const FPenguinsAction Action)
+{
+	if (Action.FromX == -1 && Action.FromY == -1)
+	{
+		PlacePlayerPiece(Action);
+	}
+	else
+	{
+		MovePlayerPiece(Action);
+	}
+}
+
 void APenguinsBoard::InitialiseBoardFromState(const UPenguinsBoardState* State)
 {
 	HexWidth = CalculateHexWidth(State);
@@ -130,4 +142,36 @@ FVector2d APenguinsBoard::CalculateTileLocation(const UPenguinsBoardState* State
 	const float X = XOffset + Tile.Location.Y * HexWidth;
 
 	return FVector2d(X, Y);
+}
+
+void APenguinsBoard::PlacePlayerPiece(const FPenguinsAction& Action)
+{
+	const APenguinsGameState* GameState = Cast<APenguinsGameState>(GetWorld()->GetGameState());
+	if (GameState && GameState->Board)
+	{
+		// TODO: a lot of repetition here
+		const FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, false);
+		const int32 Row = Action.ToX;
+		const int32 Col = Action.ToY;
+		const auto Tile = GameState->Board->GetTileAt(Row, Col);
+		const FVector2d Location2D = CalculateTileLocation(GameState->Board, Tile);
+		const FVector Location = FVector(Location2D.X, Location2D.Y, 10);
+
+		if (const auto Piece = SpawnPiece(PlayerPieceClass, Location, AttachRules))
+		{
+			if (const auto PlayerPiece = Cast<APenguinsPiecePlayer>(Piece))
+			{
+				PlayerPiece->Init(Action.Player, FIntVector2(Row, Col));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to spawn player piece (%d, %d)"), Row, Col);
+		}
+	}
+}
+
+void APenguinsBoard::MovePlayerPiece(FPenguinsAction Action)
+{
+	// TODO: implement piece movement
 }

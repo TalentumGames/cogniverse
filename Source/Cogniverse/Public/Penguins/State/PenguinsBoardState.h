@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PenguinsTile.h"
+#include "Penguins/PenguinsPlayerState.h"
 #include "UObject/NoExportTypes.h"
 #include "PenguinsBoardState.generated.h"
 
@@ -16,6 +17,7 @@ public:
 	UPenguinsBoardState();
 
 	const TArray<int32> RowLengths = {4, 5, 6, 7, 6, 5, 4};
+	const uint8 PiecesPerPlayer = 3;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FPenguinsTile> Tiles;
@@ -23,11 +25,14 @@ public:
 	TArray<int32> GenerateRandomStart() const;
 	void ApplyStartingPositions(TArray<int32> Positions);
 	int32 LongestRowLength() const;
+	FPenguinsTile& GetTileAt(int32 Row, int32 Column);
+	void AssignToPlayer(EPenguinsSide Player, int32 Row, int32 Col);
+	void Clear(int32 Row, int32 Col);
+	bool IsReadyForMovement();
 
 private:
 	void InitialiseBoard();
 
-	FPenguinsTile& GetTileAt(int32 Row, int32 Column);
 	int32 GetIndexFromRowColumn(int32 Row, int32 Column) const;
 	bool IsValidRowColumn(int32 Row, int32 Column) const;
 };

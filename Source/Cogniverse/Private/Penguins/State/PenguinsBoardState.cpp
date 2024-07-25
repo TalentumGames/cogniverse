@@ -29,7 +29,7 @@ TArray<int32> UPenguinsBoardState::GenerateRandomStart() const
 	TArray<int32> UnoccupiedIndices;
 	const int32 TileCount = Tiles.Num();
 
-	while (UnoccupiedIndices.Num() < 6)
+	while (UnoccupiedIndices.Num() < PiecesPerPlayer * 2)
 	{
 		int32 RandomIndex = FMath::RandRange(0, TileCount - 1);
 		if (!UnoccupiedIndices.Contains(RandomIndex))
@@ -68,6 +68,47 @@ FPenguinsTile& UPenguinsBoardState::GetTileAt(int32 Row, int32 Column)
 	check(IsValidRowColumn(Row, Column));
 	int32 Index = GetIndexFromRowColumn(Row, Column);
 	return Tiles[Index];
+}
+
+void UPenguinsBoardState::AssignToPlayer(const EPenguinsSide Player, const int32 Row, const int32 Col)
+{
+	switch (Player)
+	{
+	case EPenguinsSide::Yellow:
+		{
+			GetTileAt(Row, Col).State = EPenguinsTileState::Yellow;
+			break;
+		}
+	case EPenguinsSide::Red:
+		{
+			GetTileAt(Row, Col).State = EPenguinsTileState::Red;
+			break;
+		}
+	case EPenguinsSide::Unassigned:
+		{
+			UE_LOG(LogTemp, Error, TEXT("Attempted to assign tile to invalid player"))
+			break;
+		}
+	}
+}
+
+void UPenguinsBoardState::Clear(const int32 Row, const int32 Col)
+{
+	GetTileAt(Row, Col).State = EPenguinsTileState::Unoccupied;
+}
+
+bool UPenguinsBoardState::IsReadyForMovement()
+{
+	int32 NumPlayerPieces = 0;
+	for (const auto Tile : Tiles)
+	{
+		if (Tile.State == EPenguinsTileState::Red || Tile.State == EPenguinsTileState::Yellow)
+		{
+			NumPlayerPieces++;
+		}
+	}
+
+	return NumPlayerPieces == PiecesPerPlayer * 2;
 }
 
 int32 UPenguinsBoardState::GetIndexFromRowColumn(int32 Row, int32 Column) const
