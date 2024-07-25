@@ -7,7 +7,8 @@
 
 APenguinsGameState::APenguinsGameState()
 {
-	Board = CreateDefaultSubobject<UPenguinsBoardState>(TEXT("BoardState"));
+	bReplicates = true;
+	Board = nullptr;
 }
 
 void APenguinsGameState::PreInitializeComponents()

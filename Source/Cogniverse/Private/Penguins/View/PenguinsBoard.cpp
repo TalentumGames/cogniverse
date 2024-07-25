@@ -66,7 +66,6 @@ void APenguinsBoard::PlaceNeutralPieces(const UPenguinsBoardState* State)
 			break;
 		case EPenguinsTileState::Neutral:
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Neutral tile"))
 				const int32 Row = Tile.Location.X;
 				const int32 Col = Tile.Location.Y;
 				const FVector2d Location2D = CalculateTileLocation(State, Tile);
@@ -74,7 +73,6 @@ void APenguinsBoard::PlaceNeutralPieces(const UPenguinsBoardState* State)
 				if (const auto Piece = SpawnPiece(NeutralPieceClass, Location, AttachRules))
 				{
 					Piece->BoardLocation = FInt32Vector2(Row, Col);
-					UE_LOG(LogTemp, Warning, TEXT("Spawned neutral tile"))
 				}
 				else
 				{

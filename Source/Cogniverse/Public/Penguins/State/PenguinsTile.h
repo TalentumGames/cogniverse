@@ -11,8 +11,8 @@ enum class EPenguinsTileState : uint8
 {
 	Unoccupied UMETA(DisplayName = "Unoccupied"),
 	Neutral UMETA(DisplayName = "Neutral Piece"),
-	Player1 UMETA(DisplayName = "Player 1"),
-	Player2 UMETA(DisplayName = "Player 2")
+	Yellow UMETA(DisplayName = "Yellow"),
+	Red UMETA(DisplayName = "Red")
 };
 
 
